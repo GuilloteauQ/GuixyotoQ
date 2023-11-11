@@ -13,9 +13,15 @@
     (name "ior-simgrid")
     (propagated-inputs (list simgrid perl))
     (arguments
-     '(#:configure-flags '((string-append "MPICC=" simgrid "/bin/smpicc")
-                           (string-append "CC=" simgrid "/bin/smpicc")
-                           )))))
+     '(
+       #:configure-flags '(#~(string-append "MPICC=" #$simgrid "/bin/smpicc")
+                           #~(string-append "CC=" #$simgrid "/bin/smpicc"))
+       #:phases
+       (modify-phases %standard-phases
+		      (add-after 'unpack bootstrap
+				 (lambda _
+				   (invoke "./bootstrap"))))
+                           ))))
 
     ; configurePhase = ''
     ;   ./bootstrap && SMPI_PRETEND_CC=1 ./configure --prefix=$out MPICC=${pkgs.simgrid}/bin/smpicc CC=${pkgs.simgrid}/bin/smpicc
